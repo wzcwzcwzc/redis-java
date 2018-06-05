@@ -11,7 +11,7 @@ public class DBConnect {
         {
                 try {
                          Class.forName("org.postgresql.Driver");
-                         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/market","postgres","1997625wzc");
+                         conn = DriverManager.getConnection("jdbc:postgresql://localhost:5432/market","database username","database password");
                 } catch (ClassNotFoundException e) {
                          e.printStackTrace();
                 } catch (SQLException e) {
