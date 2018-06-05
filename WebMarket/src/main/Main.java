@@ -7,121 +7,57 @@ import shopcart.Shopcart_op;
 
 public class Main {
 
-	/* »ñÈ¡¶ÔÓ¦ÓÃ»§µÄ¹ºÎï³µÒÔ¼°³µÄÚ¶©µ¥ÄÚÈİ£¬²¢½øĞĞÏàÓ¦µÄÔöÉ¾¸Ä²é²Ù×÷
-     * ÔÚredisÄÚ´æ´¢²¿·ÖÈÈÊı¾İ °üÀ¨ shopcart Óë order ´æ´¢·½Ê½Îª É¢ÁĞ·½Ê½
-     * Í¨¹ıÉ¢ÁĞ¿ÉÒÔ´ïµ½¿ìËÙ²éÑ¯µÄÄ¿µÄ£¬´Ó¶øÓÅ»¯ÁËÏµÍ³£¬Ìá¸ßÁËÏµÍ³µÄÔËĞĞĞ§ÂÊ
-     * ¶ÔÓÚÀäÊı¾İÔò´æ´¢ÔÚpostgresqlÀï¡£
+	/* è·å–å¯¹åº”ç”¨æˆ·çš„è´­ç‰©è½¦ä»¥åŠè½¦å†…è®¢å•å†…å®¹ï¼Œå¹¶è¿›è¡Œç›¸åº”çš„å¢åˆ æ”¹æŸ¥æ“ä½œ
+     * åœ¨rediså†…å­˜å‚¨éƒ¨åˆ†çƒ­æ•°æ® åŒ…æ‹¬ shopcart ä¸ order å­˜å‚¨æ–¹å¼ä¸º æ•£åˆ—æ–¹å¼
+     * é€šè¿‡æ•£åˆ—å¯ä»¥è¾¾åˆ°å¿«é€ŸæŸ¥è¯¢çš„ç›®çš„ï¼Œä»è€Œä¼˜åŒ–äº†ç³»ç»Ÿï¼Œæé«˜äº†ç³»ç»Ÿçš„è¿è¡Œæ•ˆç‡
+     * å¯¹äºå†·æ•°æ®åˆ™å­˜å‚¨åœ¨postgresqlé‡Œã€‚
     */
 	public static void main(String[] args) 
 			throws SQLException {
-			
-		
 		/*
-		 * µ¥¸öRedis×÷Îª¶ş¼¶»º´æÓëPostgresqlÁ¬½Ó²âÊÔ
-		 * ÊµÏÖ¸ßËÙµÄÔöÉ¾¸Ä²é
-		 * 
-		
+		 * å•ä¸ªRedisä½œä¸ºäºŒçº§ç¼“å­˜ä¸Postgresqlè¿æ¥æµ‹è¯•
+		 * å®ç°é«˜é€Ÿçš„å¢åˆ æ”¹æŸ¥
+		 *
 			Login main = new Login();
 			main.redisLogin("3", "Maxwell", "24");
-			main.redisLogin("2", "Don", "23");
-			
 			
 			Good computer = new Good("3", "3", "computer-3", 10000, 2 );
-			
 			Good coffee = new Good("2", "2", "coffee-2", 5, 10);
-			
 			
 			Shopcart_op op = new Shopcart_op();
 			
-
 			op.addOrder("3", computer);				
-			op.addOrder("2", coffee);
-			op.addOrder("3", computer);	
-			
 			op.searchOrder("3", computer);
-			op.searchOrder("2", coffee);
-			
 			op.calTotalMoney("3");
-			op.delOrderById("3", computer);
 			op.delOrderById("2", coffee);
 		*/
 		
 		
 		
-		/* Redis-cluster¼¯Èº²âÊÔ
-		 * ÊµÏÖ¼¯Èº»¯µÄÔöÉ¾¸Ä²éÊı¾İ¿â²Ù×÷
+		/* Redis-clusteré›†ç¾¤æµ‹è¯•
+		 * å®ç°é›†ç¾¤åŒ–çš„å¢åˆ æ”¹æŸ¥æ•°æ®åº“æ“ä½œ
 		 * 
-		 * */
-		
-		
-		
+		 * */		
 		Shopcart_op op = new Shopcart_op();
 		
-//		Login login = new Login();
-//		Shopcart_op op = new Shopcart_op();
-//		op.invokeBat();
-		
-//		login.clusterLogin("2", "Don", "23");
 		long start = System.currentTimeMillis();
-//		op.divOrderInClusterWithBatch();
-		//ÎŞclearbatch() 1024 2s    16384 33s  
-		//ÓĞclearbatch() 1024 16s	
+		op.divOrderInClusterWithBatch();	
 //		op.divOrderInCluster();
-		//ÎŞclearBatch() 1024 4s    16384 61s
-		op.addOrder();//1024 1s	   16384  17s
+
+//		op.addOrder();//1024 1s	   16384  17s
 		long end = System.currentTimeMillis();
 		
 		System.out.println((end - start) / 1000);
-//		
-//		long start = System.currentTimeMillis();
-//		
-//		op.searchOrderIDClusterAndDB("198531865710440448");
-//		
-//		long end = System.currentTimeMillis();
-//		
-//		System.out.println((end - start) / 1000);
 		
-		
-		
-//		Good computer = new Good("3", "3", "computer-3", 10000, 2 );
-//		Good coffee = new Good("2", "2", "coffee-2", 5, 10);
-		
-		
-		
-//		op.addOrder("3", computer);		
-//		op.addOrder("3", computer);
-//		
-//		op.searchOrderInCluster("3", computer);
-//		op.searchOrderInCluster("2", coffee);
-		
-//		op.calTotalMoney("2");
-//		op.searchOrder("3", computer);
-		
-		
-		
-		
-//		op.modifyOrderByuseridInCluster("2", coffee, computer);
-		
-//		op.delOrderByIdInCluster("3", computer);
-		
-//		op.searchOrderInCluster("3", computer);
-		
-//		long start = System.currentTimeMillis();
-//		op.divOrderInCluster();
-//		long end = System.currentTimeMillis();
-		
-//		System.out.println((end - start) / 1000);
-		//op.delOrderById("2", coffee);
-		
-		/*Ê¹ÓÃRedis¼¯Èº³¢ÊÔ´æ´¢´óÁ¿¸ß²¢·¢µÄÊı¾İ£¬Ä£ÄâË«Ê®Ò»³¡¾°
-		 * ´Ë´¦Ê¹ÓÃSnowFlakeËã·¨ÀûÓÃÊ±¼ä´Á¶ÔËùÓĞ¶©µ¥½øĞĞID·ÖÅä£¬²¢´æ´¢µ½Redis¡ªcluster¼¯ÈºÖĞÈ¥£¬²¢¼ÇÂ¼ÏÂ´æ´¢ºÄÊ±
+		/*ä½¿ç”¨Redisé›†ç¾¤å°è¯•å­˜å‚¨å¤§é‡é«˜å¹¶å‘çš„æ•°æ®ï¼Œæ¨¡æ‹ŸåŒåä¸€åœºæ™¯
+		 * æ­¤å¤„ä½¿ç”¨SnowFlakeç®—æ³•åˆ©ç”¨æ—¶é—´æˆ³å¯¹æ‰€æœ‰è®¢å•è¿›è¡ŒIDåˆ†é…ï¼Œå¹¶å­˜å‚¨åˆ°Redisâ€”clusteré›†ç¾¤ä¸­å»ï¼Œå¹¶è®°å½•ä¸‹å­˜å‚¨è€—æ—¶
 		 * */
 //		Shopcart_op s = new Shopcart_op();
 //		long start = System.currentTimeMillis();
 //		s.redisClusterSaveID();
 //		long end = System.currentTimeMillis();
 //		
-//		System.out.println("Ê¹ÓÃRedis¼¯Èº´æ´¢8196Ìõ¼ÇÂ¼ÓÃÊ±Îª "+ (end-start)/1000 + " Ãë");
+//		System.out.println("ä½¿ç”¨Redisé›†ç¾¤å­˜å‚¨8196æ¡è®°å½•ç”¨æ—¶ä¸º "+ (end-start)/1000 + " ç§’");
 		
 		}
 	}
