@@ -1,43 +1,37 @@
 package shopcart;
 
-/**
- * twitterµÄsnowflakeËã·¨ -- javaÊµÏÖ
- * 
- * @author beyond
- * @date 2016/11/26
- */
 public class SnowFlake {
 
     /**
-     * ÆğÊ¼µÄÊ±¼ä´Á
+     * èµ·å§‹çš„æ—¶é—´æˆ³
      */
     private final static long START_STMP = 1480166465631L;
 
     /**
-     * Ã¿Ò»²¿·ÖÕ¼ÓÃµÄÎ»Êı
+     * æ¯ä¸€éƒ¨åˆ†å ç”¨çš„ä½æ•°
      */
-    private final static long SEQUENCE_BIT = 12; //ĞòÁĞºÅÕ¼ÓÃµÄÎ»Êı12
-    private final static long MACHINE_BIT = 5;   //»úÆ÷±êÊ¶Õ¼ÓÃµÄÎ»Êı 
-    private final static long DATACENTER_BIT = 5;//Êı¾İÖĞĞÄÕ¼ÓÃµÄÎ»Êı
+    private final static long SEQUENCE_BIT = 12; //åºåˆ—å·å ç”¨çš„ä½æ•°12
+    private final static long MACHINE_BIT = 5;   //æœºå™¨æ ‡è¯†å ç”¨çš„ä½æ•° 
+    private final static long DATACENTER_BIT = 5;//æ•°æ®ä¸­å¿ƒå ç”¨çš„ä½æ•°
 
     /**
-     * Ã¿Ò»²¿·ÖµÄ×î´óÖµ
+     * æ¯ä¸€éƒ¨åˆ†çš„æœ€å¤§å€¼
      */
     private final static long MAX_DATACENTER_NUM = -1L ^ (-1L << DATACENTER_BIT); //31
-    private final static long MAX_MACHINE_NUM = -1L ^ (-1L << MACHINE_BIT); //Ö§³Ö31Ì¨»úÆ÷
+    private final static long MAX_MACHINE_NUM = -1L ^ (-1L << MACHINE_BIT); //æ”¯æŒ31å°æœºå™¨
     private final static long MAX_SEQUENCE = -1L ^ (-1L << SEQUENCE_BIT); //4095
 
     /**
-     * Ã¿Ò»²¿·ÖÏò×óµÄÎ»ÒÆ
+     * æ¯ä¸€éƒ¨åˆ†å‘å·¦çš„ä½ç§»
      */
     private final static long MACHINE_LEFT = SEQUENCE_BIT; //12
     private final static long DATACENTER_LEFT = SEQUENCE_BIT + MACHINE_BIT;//17
     private final static long TIMESTMP_LEFT = DATACENTER_LEFT + DATACENTER_BIT;//22
 
-    private long datacenterId;  //Êı¾İÖĞĞÄ
-    private long machineId;     //»úÆ÷±êÊ¶
-    private long sequence = 0L; //ĞòÁĞºÅ
-    private long lastStmp = -1L;//ÉÏÒ»´ÎÊ±¼ä´Á
+    private long datacenterId;  //æ•°æ®ä¸­å¿ƒ
+    private long machineId;     //æœºå™¨æ ‡è¯†
+    private long sequence = 0L; //åºåˆ—å·
+    private long lastStmp = -1L;//ä¸Šä¸€æ¬¡æ—¶é—´æˆ³
 
     public SnowFlake(long datacenterId, long machineId) {
         if (datacenterId > MAX_DATACENTER_NUM || datacenterId < 0) {
@@ -51,7 +45,7 @@ public class SnowFlake {
     }
 
     /**
-     * ²úÉúÏÂÒ»¸öID
+     * äº§ç”Ÿä¸‹ä¸€ä¸ªID
      *
      * @return
      */
@@ -62,30 +56,23 @@ public class SnowFlake {
         }
 
         if (currStmp == lastStmp) {
-            //ÏàÍ¬ºÁÃëÄÚ£¬ĞòÁĞºÅ×ÔÔö
+            //ç›¸åŒæ¯«ç§’å†…ï¼Œåºåˆ—å·è‡ªå¢
             sequence = (sequence + 1) & MAX_SEQUENCE;
-            //Í¬Ò»ºÁÃëµÄĞòÁĞÊıÒÑ¾­´ïµ½×î´ó
+            //åŒä¸€æ¯«ç§’çš„åºåˆ—æ•°å·²ç»è¾¾åˆ°æœ€å¤§
             if (sequence == 0L) {
                 currStmp = getNextMill();
             }
         } else {
-            //²»Í¬ºÁÃëÄÚ£¬ĞòÁĞºÅÖÃÎª0
+            //ä¸åŒæ¯«ç§’å†…ï¼Œåºåˆ—å·ç½®ä¸º0
             sequence = 0L;
         }
 
         lastStmp = currStmp;
         
-//        long time = (currStmp - START_STMP) << TIMESTMP_LEFT;
-//        long datacenter = datacenterId << DATACENTER_LEFT;
-//        long machine = machineId << MACHINE_LEFT;
-//        long seq = sequence;
-//        System.out.print(" " + "time: " + time + "  datacenter: " + datacenter + " machine: " + machine + " sequence: " + seq + "  ");
-//        System.out.print(" machine: "+machine +" " + " datacenternum: " + datacenter + " ");
-        
-        return (currStmp - START_STMP) << TIMESTMP_LEFT //Ê±¼ä´Á²¿·Ö
-                | datacenterId << DATACENTER_LEFT       //Êı¾İÖĞĞÄ²¿·Ö
-                | machineId << MACHINE_LEFT             //»úÆ÷±êÊ¶²¿·Ö
-                | sequence;                             //ĞòÁĞºÅ²¿·Ö
+        return (currStmp - START_STMP) << TIMESTMP_LEFT //æ—¶é—´æˆ³éƒ¨åˆ†
+                | datacenterId << DATACENTER_LEFT       //æ•°æ®ä¸­å¿ƒéƒ¨åˆ†
+                | machineId << MACHINE_LEFT             //æœºå™¨æ ‡è¯†éƒ¨åˆ†
+                | sequence;                             //åºåˆ—å·éƒ¨åˆ†
     }
 
     private long getNextMill() {
