@@ -26,24 +26,24 @@ public class Shopcart_op {
 	ResultSet rs = null;
 	JedisPoolConfig poolConfig = new JedisPoolConfig();
 	
-	/* ¸ù¾İÓÃ»§id²éÑ¯ÓÃ»§¹ºÎï³µÄÚµÄÊı¾İ£¬²¢½«ÕâĞ©Êı¾İĞ´Èëµ½redis»º´æÖĞÈ¥¡£
-	 * ¶ÔÊı¾İ½øĞĞ»ù±¾µÄÔöÉ¾¸Ä²é²Ù×÷¡£
-	 * ËÄÖÖ·½·¨¶ÔÓ¦ËÄÖÖ»º´æ²Ù×÷
+	/* æ ¹æ®ç”¨æˆ·idæŸ¥è¯¢ç”¨æˆ·è´­ç‰©è½¦å†…çš„æ•°æ®ï¼Œå¹¶å°†è¿™äº›æ•°æ®å†™å…¥åˆ°redisç¼“å­˜ä¸­å»ã€‚
+	 * å¯¹æ•°æ®è¿›è¡ŒåŸºæœ¬çš„å¢åˆ æ”¹æŸ¥æ“ä½œã€‚
+	 * å››ç§æ–¹æ³•å¯¹åº”å››ç§ç¼“å­˜æ“ä½œ
 	 * 
-	 * Í¨¹ıÊäÈëuseridÓëÉÌÆ·¶ÔÏó»ñÈ¡ÓÃ»§ÊÇ·ñ¹ºÂò¹ıÕâ¸öÉÌÆ·
-	 * 1.½øÈëredis²é Èô´æÔÚgidÔò·µ»ØÓÃ»§¹ºÂò¸ÃÉÌÆ·µÄÊıÄ¿Óëpayment
-	 * Í¨¹ı²éÑ¯orderÓ¦¸Ã·µ»Ø¸ÃÓÃ»§ËùÓĞµÄ¶©µ¥ĞÅÏ¢
+	 * é€šè¿‡è¾“å…¥useridä¸å•†å“å¯¹è±¡è·å–ç”¨æˆ·æ˜¯å¦è´­ä¹°è¿‡è¿™ä¸ªå•†å“
+	 * 1.è¿›å…¥redisæŸ¥ è‹¥å­˜åœ¨gidåˆ™è¿”å›ç”¨æˆ·è´­ä¹°è¯¥å•†å“çš„æ•°ç›®ä¸payment
+	 * é€šè¿‡æŸ¥è¯¢orderåº”è¯¥è¿”å›è¯¥ç”¨æˆ·æ‰€æœ‰çš„è®¢å•ä¿¡æ¯
 	 * */
 	
 	public synchronized void searchOrder(String userid, Good good) 
 			throws SQLException {
 		
 		
-		//ÏÈ½øÈëredis»º´æ½øĞĞÊı¾İ²éÕÒ£¬ÊÇ·ñ´æÔÚ¸ÃÓÃ»§µÄ¶©µ¥£¬Èô²»´æÔÚÔò½øÈëÊı¾İ¿â½øÒ»²½²éÕÒ
-		//²¢½«¸ÃÊı¾İ×÷Îª¡°ÈÈ¡±Êı¾İĞ´Èëµ½redis»º´æÖĞÈ¥£¬´Ó¶ø´ïµ½Êı¾İ¿ìËÙ¶ÁĞ´µÄ¹¦ÄÜ¡£
-		//´Ë´¦µÄredisÊı¾İ½á¹¹²ÉÓÃÉ¢ÁĞhashÀ´´æ´¢£¬ÕâÑù²éÑ¯Êı¾İµÄÊ±¼ä¸´ÔÓ¶ÈÖ»ÓĞO(1)
+		//å…ˆè¿›å…¥redisç¼“å­˜è¿›è¡Œæ•°æ®æŸ¥æ‰¾ï¼Œæ˜¯å¦å­˜åœ¨è¯¥ç”¨æˆ·çš„è®¢å•ï¼Œè‹¥ä¸å­˜åœ¨åˆ™è¿›å…¥æ•°æ®åº“è¿›ä¸€æ­¥æŸ¥æ‰¾
+		//å¹¶å°†è¯¥æ•°æ®ä½œä¸ºâ€œçƒ­â€æ•°æ®å†™å…¥åˆ°redisç¼“å­˜ä¸­å»ï¼Œä»è€Œè¾¾åˆ°æ•°æ®å¿«é€Ÿè¯»å†™çš„åŠŸèƒ½ã€‚
+		//æ­¤å¤„çš„redisæ•°æ®ç»“æ„é‡‡ç”¨æ•£åˆ—hashæ¥å­˜å‚¨ï¼Œè¿™æ ·æŸ¥è¯¢æ•°æ®çš„æ—¶é—´å¤æ‚åº¦åªæœ‰O(1)
 		if(redis.hgetall("good_"+good.getGid()+"|"+userid) != null) {
-			//»ñÈ¡redisµÄ²éÑ¯½á¹û²¢½«ÆäÊä³ö
+			//è·å–redisçš„æŸ¥è¯¢ç»“æœå¹¶å°†å…¶è¾“å‡º
 			Map<String, String> good_list = new HashMap<String, String>();
 			good_list = redis.hgetall("good_"+good.getGid()+"|"+userid);
 			
@@ -109,7 +109,7 @@ public class Shopcart_op {
 	    JedisCluster cluster = new JedisCluster(redis.PoolInitial(), poolConfig);
 		
 		if(cluster.hgetAll("good_"+good.getGid()+"|"+userid) != null) {
-			//»ñÈ¡redisµÄ²éÑ¯½á¹û²¢½«ÆäÊä³ö
+			//è·å–redisçš„æŸ¥è¯¢ç»“æœå¹¶å°†å…¶è¾“å‡º
 			Map<String, String> good_list = new HashMap<String, String>();
 			good_list = cluster.hgetAll("good_"+good.getGid()+"|"+userid);
 			
@@ -270,7 +270,7 @@ public class Shopcart_op {
 			redis.hmset("good_"+good.getGid()+"|"+userid, good_list);
 			redis.expire("good_"+good.getGid()+"|"+userid, 1800);
 			
-			//redisÄÚ²»´æÔÚ¸ÃÊı¾İ£¬Ôò½øÈëÊı¾İ¿â½øĞĞ²éÑ¯	
+			//rediså†…ä¸å­˜åœ¨è¯¥æ•°æ®ï¼Œåˆ™è¿›å…¥æ•°æ®åº“è¿›è¡ŒæŸ¥è¯¢	
 			String sql = "UPDATE public.good\r\n" + 
 					"	SET userid=\'"+userid+"\', gid=\'"+nGood.getGid()+
 					"\', gname=\'"+nGood.getGname()+"\', gprice=\'"+nGood.getGprice()+
@@ -312,7 +312,7 @@ public class Shopcart_op {
 		cluster.hmset("good_"+nGood.getGid()+"|"+userid, good_list);
 		cluster.expire("good_"+nGood.getGid()+"|"+userid, 1800);
 		
-		//redisÄÚ²»´æÔÚ¸ÃÊı¾İ£¬Ôò½øÈëÊı¾İ¿â½øĞĞ²éÑ¯	
+		//rediså†…ä¸å­˜åœ¨è¯¥æ•°æ®ï¼Œåˆ™è¿›å…¥æ•°æ®åº“è¿›è¡ŒæŸ¥è¯¢	
 		String sql = "UPDATE public.good\r\n" + 
 				"	SET userid=\'"+userid+"\', gid=\'"+nGood.getGid()+
 				"\', gname=\'"+nGood.getGname()+"\', gprice=\'"+nGood.getGprice()+
@@ -334,11 +334,11 @@ public class Shopcart_op {
 }
 	
 	
-	//²ÉÓÃhashÉ¢ÁĞÀ´´æ´¢ÓÃ»§µÄ¹ºÎï³µÄÚÈİ£¬½«ÕâĞ©ÄÚÈİÔİÊ±´æ´¢µ½redisÖĞ£¬¾­¹ıÒ»¶ÎÊ±¼ä×Ô¶¯¸üĞÂ
+	//é‡‡ç”¨hashæ•£åˆ—æ¥å­˜å‚¨ç”¨æˆ·çš„è´­ç‰©è½¦å†…å®¹ï¼Œå°†è¿™äº›å†…å®¹æš‚æ—¶å­˜å‚¨åˆ°redisä¸­ï¼Œç»è¿‡ä¸€æ®µæ—¶é—´è‡ªåŠ¨æ›´æ–°
 	public synchronized void addOrder(String userid, Good good) 
 			throws SQLException {
 		
-			//½«ÉÌÆ·ĞÅÏ¢Ôö¼Óµ½redisµÄ¶ÔÓ¦useridµÄgood_listÖĞÈ¥
+			//å°†å•†å“ä¿¡æ¯å¢åŠ åˆ°redisçš„å¯¹åº”useridçš„good_listä¸­å»
 			HashMap<String, String> good_list = new HashMap<String, String>();
 		
 			good_list.put("userid", userid);
@@ -350,7 +350,7 @@ public class Shopcart_op {
 			redis.hmset("good_"+good.getGid()+"|"+userid, good_list);
 			redis.expire("good_"+good.getGid()+"|"+userid, 1800);
 		
-			//ÔÚ¶Ôredis²Ù×÷Íê±Ïºó£¬ÔÙ¶ÔÊı¾İ¿â½øĞĞ²Ù×÷
+			//åœ¨å¯¹redisæ“ä½œå®Œæ¯•åï¼Œå†å¯¹æ•°æ®åº“è¿›è¡Œæ“ä½œ
 	
 			String sql = "INSERT INTO public.good(\r\n" + 
 					"	userid, gid, gname, gprice, gnum)\r\n" + 
@@ -361,7 +361,7 @@ public class Shopcart_op {
 					+"," + good.getGnum() + ")";
 		
 			
-			//Èô²»¼Ótry-catch Ä£¿é¾Í»á³öÏÖÖĞ¶Ï,»³ÒÉÊÇÊ¹ÓÃconnectionÊ±³öÏÖÒì³£
+			//è‹¥ä¸åŠ try-catch æ¨¡å—å°±ä¼šå‡ºç°ä¸­æ–­,æ€€ç–‘æ˜¯ä½¿ç”¨connectionæ—¶å‡ºç°å¼‚å¸¸
 			try {
 //				c.conn.createStatement().executeQuery(sql);
 				c.conn.prepareStatement(sql).executeQuery();
@@ -380,7 +380,7 @@ public class Shopcart_op {
 		
 	    JedisCluster cluster = new JedisCluster(redis.PoolInitial(), poolConfig);
 		
-		//½«ÉÌÆ·ĞÅÏ¢Ôö¼Óµ½redisµÄ¶ÔÓ¦useridµÄgood_listÖĞÈ¥
+		//å°†å•†å“ä¿¡æ¯å¢åŠ åˆ°redisçš„å¯¹åº”useridçš„good_listä¸­å»
 		HashMap<String, String> good_list = new HashMap<String, String>();
 	
 		good_list.put("userid", userid);
@@ -392,7 +392,7 @@ public class Shopcart_op {
 		cluster.hmset("good_"+good.getGid()+"|"+userid, good_list);
 		cluster.expire("good_"+good.getGid()+"|"+userid, 1800);
 	
-		//ÔÚ¶Ôredis²Ù×÷Íê±Ïºó£¬ÔÙ¶ÔÊı¾İ¿â½øĞĞ²Ù×÷
+		//åœ¨å¯¹redisæ“ä½œå®Œæ¯•åï¼Œå†å¯¹æ•°æ®åº“è¿›è¡Œæ“ä½œ
 
 		String sql = "INSERT INTO public.good(\r\n" + 
 				"	userid, gid, gname, gprice, gnum)\r\n" + 
@@ -403,7 +403,7 @@ public class Shopcart_op {
 				+"," + good.getGnum() + ")";
 	
 		
-		//Èô²»¼Ótry-catch Ä£¿é¾Í»á³öÏÖÖĞ¶Ï,»³ÒÉÊÇÊ¹ÓÃconnectionÊ±³öÏÖÒì³£
+		//è‹¥ä¸åŠ try-catch æ¨¡å—å°±ä¼šå‡ºç°ä¸­æ–­,æ€€ç–‘æ˜¯ä½¿ç”¨connectionæ—¶å‡ºç°å¼‚å¸¸
 		try {
 
 			c.conn.prepareStatement(sql).executeQuery();
@@ -519,8 +519,8 @@ public class Shopcart_op {
 				
 				System.out.println("gid: " + gid[i] + "\tgname: " + gname[i] 
 						+ "\tgprice: " + gprice[i] + "\tgnum: " + gnum[i]);
-				//½«¸Ã²éÑ¯Êı¾İ×÷ÎªÈÈÊı¾İ´æ´¢µ½redisÖĞ²¢½øĞĞ¸üĞÂ	
-				redis.sadd("usergood_"+userid, ""+gname[i]);//¶Ô¼¯ºÏ½øĞĞ²Ù×÷
+				//å°†è¯¥æŸ¥è¯¢æ•°æ®ä½œä¸ºçƒ­æ•°æ®å­˜å‚¨åˆ°redisä¸­å¹¶è¿›è¡Œæ›´æ–°	
+				redis.sadd("usergood_"+userid, ""+gname[i]);//å¯¹é›†åˆè¿›è¡Œæ“ä½œ
 				redis.expire("usergood_"+userid, 1800);
 				
 				
@@ -580,8 +580,8 @@ public class Shopcart_op {
 				
 				System.out.println("gid: " + gid[i] + "\tgname: " + gname[i] 
 						+ "\tgprice: " + gprice[i] + "\tgnum: " + gnum[i]);
-				//½«¸Ã²éÑ¯Êı¾İ×÷ÎªÈÈÊı¾İ´æ´¢µ½redisÖĞ²¢½øĞĞ¸üĞÂ	
-				cluster.sadd("usergood_"+userid, ""+gname[i]);//¶Ô¼¯ºÏ½øĞĞ²Ù×÷
+				//å°†è¯¥æŸ¥è¯¢æ•°æ®ä½œä¸ºçƒ­æ•°æ®å­˜å‚¨åˆ°redisä¸­å¹¶è¿›è¡Œæ›´æ–°	
+				cluster.sadd("usergood_"+userid, ""+gname[i]);//å¯¹é›†åˆè¿›è¡Œæ“ä½œ
 				cluster.expire("usergood_"+userid, 1800);
 			}
 		}
@@ -619,11 +619,11 @@ public class Shopcart_op {
 	}
 	
 		
-		 /*½øĞĞredisµÄ²Ù×÷
-		    *1. µ÷ÓÃsnowFlakeÉú³É´óÁ¿IDÓÃÀ´Ä£Äâ´óÁ¿Êı¾İ·ÃÎÊ
-		    *2. ½«ÕâĞ©ID½øĞĞ·Ö¿â·Ö±í²Ù×÷£¬ÏÈ´æÈëRedis¼¯Èº
-		    *3. Redis¼¯Èº×÷Îª¶ş¼¶»º´æÓëºóÌ¨Êı¾İ¿âÏàÁ¬½Ó£¬²»¶ÏÏòÊı¾İ¿âÄÚ´æ´¢ĞÅÏ¢
-		    * ¶Ô¼¯ÈºÄÚ²¿µÄ¶©µ¥±àºÅ½øĞĞÏàÓ¦µÄ·Ö¿â·Ö±í²Ù×÷
+		 /*è¿›è¡Œredisçš„æ“ä½œ
+		    *1. è°ƒç”¨snowFlakeç”Ÿæˆå¤§é‡IDç”¨æ¥æ¨¡æ‹Ÿå¤§é‡æ•°æ®è®¿é—®
+		    *2. å°†è¿™äº›IDè¿›è¡Œåˆ†åº“åˆ†è¡¨æ“ä½œï¼Œå…ˆå­˜å…¥Redisé›†ç¾¤
+		    *3. Redisé›†ç¾¤ä½œä¸ºäºŒçº§ç¼“å­˜ä¸åå°æ•°æ®åº“ç›¸è¿æ¥ï¼Œä¸æ–­å‘æ•°æ®åº“å†…å­˜å‚¨ä¿¡æ¯
+		    * å¯¹é›†ç¾¤å†…éƒ¨çš„è®¢å•ç¼–å·è¿›è¡Œç›¸åº”çš„åˆ†åº“åˆ†è¡¨æ“ä½œ
 		 * */
 	
 	/*
@@ -642,7 +642,7 @@ public class Shopcart_op {
 		
 		
 		
-		//²ğ·Ödbsum¸ö¿â  Ã¿¸ö¿âtbsumÕÅ±í
+		//æ‹†åˆ†dbsumä¸ªåº“  æ¯ä¸ªåº“tbsumå¼ è¡¨
 		
 		int dbnum, tbnum = 0;
 		final int tbsum = 5;
@@ -689,7 +689,7 @@ public class Shopcart_op {
 					"	VALUES (\'" + id_list.get(i) + "\');";	
 
 		}	
-			//Åú´¦Àí²Ù×÷
+			//æ‰¹å¤„ç†æ“ä½œ
 			Statement stmt = c.conn.createStatement();
 			
 			for(int i = 0; i < id_list.size(); i++) {
@@ -704,25 +704,6 @@ public class Shopcart_op {
 				
 				}
 			}
-			
-//			Statement stmt = c.conn.createStatement();	
-////			PreparedStatement ps = null;
-////			
-//			try {			
-//				for(int i = 0; i < id_list.size(); i++) {	
-//					
-//					stmt.addBatch(sqls[i]);
-////					stmt.setString();
-//					System.out.println("batch:::::"+sqls[i]);
-//					while(i % 30 == 0) {
-//						stmt.executeBatch();
-//						System.out.println("execute------------"+sqls[i]);
-//					}
-//				}
-//			}catch(SQLException e) {
-//				e.getMessage();
-//			}
-			
 			try {
 				cluster.close();
 				System.out.println("the id has been divided into different db and tb");
@@ -733,15 +714,15 @@ public class Shopcart_op {
 	
 	public void divOrderInCluster() throws SQLException {
 		poolConfig.setMaxTotal(8);
-	    poolConfig.setMaxIdle(8);
-	    poolConfig.setMaxWaitMillis(1000);
+	   	poolConfig.setMaxIdle(8);
+	    	poolConfig.setMaxWaitMillis(1000);
 	    
 		JedisCluster cluster = new JedisCluster(redis.PoolInitial(), poolConfig);
 		SnowFlake snow = new SnowFlake(2, 3);
 
 		
 		
-		//²ğ·Ödbsum¸ö¿â  Ã¿¸ö¿âtbsumÕÅ±í
+		//æ‹†åˆ†dbsumä¸ªåº“  æ¯ä¸ªåº“tbsumå¼ è¡¨
 		
 		int dbnum, tbnum = 0;
 		int tbsum = 5;
@@ -789,74 +770,6 @@ public class Shopcart_op {
 		
 	}
 		
-	
-	
-	
-	/*
-	 * ³¢ÊÔ¼ÓÈëÅú´¦Àí²Ù×÷ Ê¹ÓÃpreparedStatement´¦ÀíÏàÓ¦µÄsqlÓï¾ä ¼Ó¿ì²åÈëÊı¾İµÄËÙ¶È need improvement
-	 * 
-	 * 
-	 * ________     _________ | | | 
-	 						  | | | 
-	 * 						  |
-	 * 						  |
-	 * 
-	 * 
-	 * 		________
-	 * 
-	 * 
-	 * 
-	 * 
-	 * */
-	public synchronized void addSnowIDInDBWithBatch(int dbnum, int tbnum, String orderid) 
-			throws SQLException{
-		
-		poolConfig.setMaxTotal(8);	  
-	    poolConfig.setMaxIdle(8);
-	    poolConfig.setMaxWaitMillis(1000);
-		
-		JedisCluster cluster = new JedisCluster(redis.PoolInitial(), poolConfig);
-		
-		List<String> id_list = new LinkedList<String>();
-		
-		for(long i = 0; i < cluster.llen("orderid_list"); i++ ) {
-			
-			id_list.add(cluster.lindex("orderid_list", i));
-			
-		}
-		
-		for(int i = 0; i < id_list.size(); i++) {
-			
-			String sql = "INSERT INTO public.order_" + tbnum + "(\r\n" + 
-					"	\"orderID\")\r\n" + 
-					"	VALUES (\'" + orderid + "\');";
-		
-
-			PreparedStatement ps = null;
-			
-			try {
-				ps = c.conn.prepareStatement(sql);
-				ps.addBatch();
-				
-				while(i % 1000 == 0) {
-				
-					ps.executeBatch();
-				
-				}
-			}catch(SQLException e) {
-				e.getMessage();
-			}
-			
-		}
-		
-		try {		
-			cluster.close();		
-		}catch(IOException e) {
-			e.getMessage();
-		}
-	}
-	
-	
 	public synchronized void addOrder() {
 		
 		poolConfig.setMaxTotal(8);
@@ -880,23 +793,5 @@ public class Shopcart_op {
 		}
 		
 	}
-	
-	/*
-	 * µ÷ÓÃbatÎÄ¼ş but has some problems about cluster down
-	 * */
-//	public void invokeBat() {
-//		
-//		String cmd = "cmd /k start E:\\RedisCluster\\startCluster.bat";
-//		
-//		try {
-//			Process ps = Runtime.getRuntime().exec(cmd);
-//			System.out.println(ps.getInputStream());
-//			
-//		}catch(IOException e) {
-//			
-//			e.printStackTrace();
-//		}
-//		
-//	}
 }
 
