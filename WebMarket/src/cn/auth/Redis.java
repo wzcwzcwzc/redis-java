@@ -25,12 +25,10 @@ public class Redis extends Jedis {
             return redis.set(key, value);
     }
 
-    public Long del(String... keys) {
+    public Long del(String keys) {
 
             return redis.del(keys);
     }
-
-    // ¼üÖµÔö¼Ó×Ö·û
 
     public Long append(String key, String str) {
 
